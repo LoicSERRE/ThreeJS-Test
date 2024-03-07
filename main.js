@@ -56,6 +56,7 @@ for (let i = 0, j = 0, l = vertices.length; i < l; i++, j += 3) {
 
 const material = new THREE.MeshLambertMaterial({ color: 0x909090, side: THREE.DoubleSide });
 const plane = new THREE.Mesh(geometry, material);
+plane.receiveShadow = true; // Enable shadow casting on the plane
 scene.add(plane);
 
 // Texturer le plane avec l'image sable.jpg que je repète 10 fois sur les deux axes
@@ -63,8 +64,9 @@ let sable = new THREE.TextureLoader().load('sable.jpg');
 sable.wrapS = THREE.RepeatWrapping;
 sable.wrapT = THREE.RepeatWrapping;
 sable.repeat.set(10, 10);
-let materialsable = new THREE.MeshLambertMaterial({ map: sable });
+let materialsable = new THREE.MeshLambertMaterial({ map: sable, side: THREE.DoubleSide });
 let mesh = new THREE.Mesh(geometry, materialsable);
+mesh.receiveShadow = true; // Enable shadow casting on the mesh
 scene.add(mesh);
 
 // Ajouter une lumière embiante de couleur 0x5555555
@@ -72,7 +74,11 @@ const ambientLight = new THREE.AmbientLight(0x555555, 1);
 scene.add(ambientLight);
 
 // Ajouter une lumière directionelle de couleurs 0x999999
-const directionalLight = new THREE.DirectionalLight(0x999999, 1);
+const directionalLight = new THREE.DirectionalLight(0x999999, 1.0);
+directionalLight.position.set(2, 50, 1);
+directionalLight.target.position.set(0, 0, 0);
+directionalLight.castShadow = true;
+scene.add(directionalLight.target); 
 scene.add(directionalLight);
 
 // Ajouter une source de lumière ponctuelle en 0, 12, 0 de couleurs 0x999999 
