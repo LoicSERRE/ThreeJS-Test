@@ -1,6 +1,4 @@
-# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# Fichier créé: 22.03.2019 16:54:43
-
+# Bois
 newmtl mat20
 	Ns 30.0000
 	Ni 1.5000
@@ -13,6 +11,7 @@ newmtl mat20
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
 
+# PiÃ¨ces
 newmtl mat12
 	Ns 30.0000
 	Ni 1.5000
@@ -25,8 +24,9 @@ newmtl mat12
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
 
+# MÃ©tal
 newmtl mat13
-	Ns 30.0000
+	Ns 300.0000
 	Ni 1.5000
 	d 1.0000
 	Tr 0.0000
@@ -34,9 +34,10 @@ newmtl mat13
 	illum 2
 	Ka 0.5500 0.5500 0.5500
 	Kd 1.0000 0.6000 0.0000
-	Ks 0.0000 0.0000 0.0000
+	Ks 1.0000 1.0000 1.0000
 	Ke 0.0000 0.0000 0.0000
 
+# SÃ©rure
 newmtl mat23
 	Ns 30.0000
 	Ni 1.5000
