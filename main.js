@@ -158,39 +158,6 @@ creation_algues(300, plane);
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
-// Charger l'objet requin.obj et son material requin.mtl
-
-    mtlLoader.load('requin/requin.mtl', function (materials) {
-        materials.preload();
-        let objLoader = new OBJLoader();
-        objLoader.setMaterials(materials);
-        objLoader.load('requin/requin.obj', function (object) {
-            object.position.set(0, 15, 0);
-            object.name = "requin";
-            scene.add(object);
-        });
-    });
-
-var clock = new THREE.Clock();
-var angle = 0;
-var radius = 30;
-var speed = 0.2;
-
-function animateRequin() {
-    var delta = clock.getDelta();
-
-    // Récupère le canadair
-    var requin = scene.getObjectByName("requin");
-
-    // Le faire avancer et tourner
-    if (requin) {
-        angle += speed * delta;
-        requin.position.x = radius * Math.cos(angle);
-        requin.position.z = radius * Math.sin(angle);
-        requin.rotation.y = -angle;
-    }
-}
-
 function creation_requins(nb_requins, rayon_min, rayon_max, hauteur_min, hauteur_max) {
     const group = new THREE.Group();
     group.name = "requins";
@@ -200,7 +167,6 @@ function creation_requins(nb_requins, rayon_min, rayon_max, hauteur_min, hauteur
         materials.preload();
         const objLoader = new OBJLoader();
         // Création d'un material pour chaque requin
-        
         objLoader.setMaterials(materials);
 
         objLoader.load('requin/requin.obj', function (object) {
@@ -213,6 +179,8 @@ function creation_requins(nb_requins, rayon_min, rayon_max, hauteur_min, hauteur
                 // Mettre la meme rotation que l'objet original
                 clonedObject.rotation.copy(object.rotation);
 
+                const clockwise = Math.random() < 0.5; // Choix aléatoire du sens
+                
                 const radius = Math.random() * (rayon_max - rayon_min) + rayon_min;
                 const angle = Math.random() * Math.PI * 2;
                 const x = radius * Math.cos(angle);
@@ -221,59 +189,49 @@ function creation_requins(nb_requins, rayon_min, rayon_max, hauteur_min, hauteur
 
                 clonedObject.position.set(x, y, z);
 
-                // Check if the position is below the terrain
-                const raycaster = new THREE.Raycaster();
-                const direction = new THREE.Vector3(0, -1, 0);
-                const origin = clonedObject.position.clone();
-                origin.y = 200; // Set the origin above the terrain
-
-                raycaster.set(origin, direction);
-                const intersects = raycaster.intersectObject(plane);
-
-                if (intersects.length > 0) {
-                    const terrainHeight = intersects[0].point.y;
-                    if (clonedObject.position.y < terrainHeight) {
-                        clonedObject.position.y = terrainHeight;
-                    }
-                }
+                // Ajouter les informations de position, radius, hauteur, vitesse et sens aux requins
+                const speed = Math.random() * 0.01 + 0.0002; // Vitesse aléatoire entre 0.1 et 0.6
 
                 group.add(clonedObject);
+
+                
+
+                clonedObject.userData = {
+                    position: clonedObject.position.clone(),
+                    radius: radius,
+                    hauteur: y,
+                    vitesse: speed,
+                    sens: clockwise
+                };
             }
         });
     });
 
     scene.add(group);
-
-    function animateRequins() {
-        // Animer les requins du groupe "requins" pour qu'ils tournent autour de l'axe Y
-        
-        const group = scene.getObjectByName("requins");
-        let angle = 0;
-        speed = 0.2;
-        // Rayon aléatoire entre 20 et 50
-
-        for (let i = 0; i < group.children.length; i++) {
-            const delta = clock.getDelta();
-            angle += speed * delta;
-            const requin = group.children[i];
-
-            // On récupère les coordonnées du requin
-            const x = requin.position.x;
-            const z = requin.position.z;
-
-            // On calcule les nouvelles coordonnées pour faire un cercle autour de ce point
-            requin.position.x = x * Math.cos(angle) - z * Math.sin(angle);
-            requin.position.z = x * Math.sin(angle) + z * Math.cos(angle);
-            requin.rotation.y -= angle;
-        }
-
-        requestAnimationFrame(animateRequins);
-    }
-
-    requestAnimationFrame(animateRequins);
 }
 
-creation_requins(10, 20, 50, 5, 15);
+var clock = new THREE.Clock();
+var angle = 0;
+var speed = 0.2;
+
+function animateRequins() {
+    const group = scene.getObjectByName("requins");
+    const delta = clock.getDelta();
+
+    for (let i = 0; i < group.children.length; i++) {
+        const requin = group.children[i];
+
+        angle += requin.userData.vitesse * delta;
+
+        const direction = requin.userData.sens ? 1 : -1; // Sens horaire ou anti-horaire
+
+        requin.position.x = requin.userData.position.x + direction * requin.userData.radius * Math.cos(angle);
+        requin.position.z = requin.userData.position.z + direction * requin.userData.radius * Math.sin(angle);
+        requin.rotation.y = -angle;
+    }
+}
+
+creation_requins(30, 20, 60, 12, 30);
 
 function animateAlgues() {
     const group = scene.getObjectByName("algues");
@@ -309,7 +267,7 @@ function animate() {
     stats.update();
     controls.update();
     renderer.render(scene, camera);
-    requestAnimationFrame(animateRequin);
+    requestAnimationFrame(animateRequins);
     requestAnimationFrame(animateAlgues);
     requestAnimationFrame(animate);
 };
