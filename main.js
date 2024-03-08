@@ -212,7 +212,6 @@ function creation_requins(nb_requins, rayon_min, rayon_max, hauteur_min, hauteur
 
 var clock = new THREE.Clock();
 var angle = 0;
-var speed = 0.2;
 
 function animateRequins() {
     const group = scene.getObjectByName("requins");
@@ -227,11 +226,15 @@ function animateRequins() {
 
         requin.position.x = requin.userData.position.x + direction * requin.userData.radius * Math.cos(angle);
         requin.position.z = requin.userData.position.z + direction * requin.userData.radius * Math.sin(angle);
-        requin.rotation.y = -angle;
+
+        if(!requin.userData.sens)
+            requin.rotation.y = -angle + Math.PI;
+        else
+            requin.rotation.y = -angle;
     }
 }
 
-creation_requins(30, 20, 60, 12, 30);
+creation_requins(50, 20, 60, 12, 30);
 
 function animateAlgues() {
     const group = scene.getObjectByName("algues");
