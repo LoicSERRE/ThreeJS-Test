@@ -1,8 +1,7 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { DDSLoader } from 'three/addons/loaders/DDSLoader.js';
-import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import Stats from 'three/addons/libs/stats.module.js';
 
 function onWindowResize() {
@@ -24,10 +23,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 var controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 10, 0);
-
-// plane helper de 200 par 200
-var planeHelper = new THREE.GridHelper(200, 200);
-scene.add(planeHelper);
 
 let relief;
 
@@ -82,6 +77,7 @@ scene.add(directionalLight.target);
 scene.add(directionalLight);
 
 // Ajouter une source de lumière ponctuelle en 0, 12, 0 de couleurs 0x999999 
+// Créer une lumière ponctuelle
 const light = new THREE.PointLight(0x999999, 20, 10, 0.1);
 light.position.set(0, 10, 0);
 scene.add(light);
@@ -100,6 +96,7 @@ mtlLoader.load('tresor/tresor.mtl', (materials) => {
         object.position.x = 0;
         object.position.y = 9;
         object.position.z = 0;
+        object.castShadow = true;
         scene.add(object);
     });
 });
@@ -129,6 +126,9 @@ function creation_algues(nb_algues, terrain) {
                 object2.rotation.x = object.rotation.x;
                 object2.rotation.z = object.rotation.z;
 
+                object.castShadow = true;
+                object2.castShadow = true;
+
                 group.add(object);
                 group.add(object2);
             });
@@ -153,8 +153,9 @@ function getRandomPositionOnTerrain(terrain) {
     return new THREE.Vector3();
 }
 
-creation_algues(300, plane);
+creation_algues(500, plane);
 
+// Statistique de fps
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
@@ -192,9 +193,9 @@ function creation_requins(nb_requins, rayon_min, rayon_max, hauteur_min, hauteur
                 // Ajouter les informations de position, radius, hauteur, vitesse et sens aux requins
                 const speed = Math.random() * 0.01 + 0.0002; // Vitesse aléatoire entre 0.1 et 0.6
 
-                group.add(clonedObject);
+                clonedObject.castShadow = true;
 
-                
+                group.add(clonedObject);                
 
                 clonedObject.userData = {
                     position: clonedObject.position.clone(),
